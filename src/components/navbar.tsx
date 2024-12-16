@@ -13,7 +13,7 @@ export default function Navbar({hero,about,course,certificate,project,skills,act
 
     return(
         <nav className="  bg-white/30 backdrop-blur-sm   dark:bg-gray-900  w-[100vw] fixed top-0 z-50" style={{boxShadow: '0 3px 10px rgb(0 0 0 / 0.2)'}}>
-            <div className=" flex flex-wrap items-center justify-between  p-4">
+            <div className=" flex flex-wrap items-center justify-between border  p-4">
                 <motion.a 
                 initial={{
                     x:-500,
