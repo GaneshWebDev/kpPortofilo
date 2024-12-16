@@ -1,116 +1,286 @@
+import { useLocation, NavLink } from "react-router-dom";
+import { useState,useEffect } from "react";
 import { motion } from "framer-motion";
-import { useState, useEffect, RefObject } from "react";
 
-interface HeaderProps {
-  hero: RefObject<HTMLDivElement>;
-  about: RefObject<HTMLDivElement>;
-  course: RefObject<HTMLDivElement>;
-  project: RefObject<HTMLDivElement>;
-  certificate: RefObject<HTMLDivElement>;
-  skills: RefObject<HTMLDivElement>;
-  activeBtn: string;
-}
-
-export default function Navbar({
-  hero,
-  about,
-  course,
-  certificate,
-  project,
-  skills,
-  activeBtn,
-}: HeaderProps) {
+export default function Navbar() {
+  const location = useLocation();
+  const isHomePage = location.pathname === "/";
+  const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-
-  const handleScroll = () => {
-    if (window.scrollY > 90) {
-      setScrolled(true); // Change navbar style after scrolling 50px
-    } else {
-      setScrolled(false);
-    }
+  const toggle = () => {
+    setOpen(!open);
   };
-
   useEffect(() => {
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+    setScrolled(false);
+    if (isHomePage) {
+      const handleScroll = () => {
+        if (window.scrollY > 90) {
+          console.log('scrolled');
+          setScrolled(true); // Change navbar style after scrolling 50px
+        } else {
+          setScrolled(false);
+        }
+      };
 
+      // Add scroll event listener
+      window.addEventListener("scroll", handleScroll);
+
+      // Clean up event listener on unmount
+      return () => window.removeEventListener("scroll", handleScroll);
+    }
+  }, [isHomePage]);
   return (
     <nav
-      className={`w-full fixed top-0 z-50 font-sans transition-all duration-1000 ease-in-out ${
-        !scrolled ? "bg-transparent text-white" : "bg-white text-black"
+      className={`w-full fixed  top-0 z-50 font-sans transition-all duration-1000 ease-in-out ${
+        isHomePage && !scrolled ? "bg-transparent text-white" : "bg-white text-black"
       }`}
     >
+      {/* Header */}
       <div
-        className={`max-w-screen-lg mx-auto px-6 py-4 flex items-center justify-between`}
+        className={`${
+          open ? "hidden" : "flex"
+        } items-center justify-between md:justify-evenly px-6 py-4  `}
       >
         {/* Logo */}
-        <motion.a
-          initial={{ x: -500, opacity: 0.5, scale: 0.5 }}
-          animate={{ x: 0, opacity: 1, scale: 1 }}
-          transition={{ duration: 1.5 }}
+        <a
           href="#"
-          className="flex items-center space-x-3 rtl:space-x-reverse"
+          className={`flex md:flex-1  items-center gap-3 border-0 justify-center sm:pl-0 md:mx-0 ${
+            isHomePage && !scrolled  ? "text-white" : "text-black"
+          }`}
         >
-          <img src="kpLogo.jpg" className="h-8 rounded-full" alt="Flowbite Logo" />
-          <span className="self-center text-1xl text-black font-semibold whitespace-nowrap dark:text-white">
-            Kranthi
-          </span>
-        </motion.a>
+          <span className="text-[2.5rem] font-bold md:text-[3rem]">Analyst</span>
+          <img
+            src={
+              isHomePage && !scrolled
+                ? "icons8-statistic-32 (2).webp"
+                : "icons8-statistic-32 (3).png"
+            }
+            className="h-8 md:h-9"
+            alt="Logo"
+          />
+        </a>
 
-        {/* Menu Toggle Button */}
-        <button
-          data-collapse-toggle="navbar-default"
-          type="button"
-          className="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
-          aria-controls="navbar-default"
-          aria-expanded="false"
-        >
-          <span className="sr-only">Open main menu</span>
-          <svg
-            className="w-5 h-5"
-            aria-hidden="true"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 17 14"
+        {/* Hamburger Menu */}
+        <div className="flex md:hidden items-center">
+          <span
+            className={`text-[1.5rem] font-light mr-0 ${
+              isHomePage && !scrolled ? "text-white" : "text-black"
+            }`}
+            onClick={toggle}
           >
-            <path
+            Menu
+          </span>
+          <button
+            className="block p-2"
+            onClick={toggle}
+            aria-label="Toggle Menu"
+          >
+            <svg
+              className={`w-8 h-8 ${isHomePage && !scrolled ? "text-white" : "text-black"}`}
+              fill="none"
               stroke="currentColor"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M1 1h15M1 7h15M1 13h15"
-            />
-          </svg>
-        </button>
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M4 6h16M4 12h16M4 18h16"
+              ></path>
+            </svg>
+          </button>
+        </div>
 
-        {/* Desktop Navigation Links */}
-        <motion.div
-          initial={{ x: 500, opacity: 0, scale: 0.5 }}
-          animate={{ x: 0, opacity: 1, scale: 1 }}
-          transition={{ duration: 1.5 }}
-          className="hidden w-full md:block md:w-auto mr-11"
-          id="navbar-default"
-        >
-          <ul className="font-medium flex flex-col p-4 md:p-0 mt-4 border border-gray-100 rounded-lg md:flex-row md:space-x-8 rtl:space-x-reverse md:mt-0 md:border-0 dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
-            {/* Menu Items */}
-            <li>
-              <button
-                className={`block py-2 px-3 ${
-                  activeBtn === "hero" ? "bg-blue-700" : "hover:bg-gray-100"
-                } rounded md:bg-transparent md:text-blue-700 md:p-0 dark:text-white md:dark:text-blue-500`}
-                onClick={() => {
-                  hero.current?.scrollIntoView({ behavior: "smooth" });
-                }}
+        {/* Desktop Links */}
+        <div className="hidden md:flex md:flex-1   justify-center items-center">
+          <div
+            className={`flex gap-11  mx-10 text-[1.1rem] justify-evenly  ${
+              isHomePage && !scrolled ? "text-white" : "text-black"
+            }`}
+          >
+            <div className="">
+              <NavLink
+                to="/"
+                className={({ isActive }) =>
+                  isActive
+                    ? `underline ${
+                        isHomePage && !scrolled ? "text-purple-300" : "text-purple-600"
+                      }`
+                    : `${isHomePage && !scrolled ? "hover:text-gray-300" : "hover:text-black"}`
+                }
               >
                 Home
-              </button>
-            </li>
-            {/* Other links (About, Projects, Certificates, etc.) */}
-            {/* Add similar code for "about", "course", "project", "certificate", and "skills" */}
-          </ul>
-        </motion.div>
+              </NavLink>
+            </div>
+            <div  className="">
+              <NavLink
+                to="/about"
+                className={({ isActive }) =>
+                  isActive
+                    ? `underline ${
+                        isHomePage && !scrolled ? "text-purple-300" : "text-purple-600"
+                      }`
+                    : `${isHomePage && !scrolled ? "hover:text-gray-300" : "hover:text-black"}`
+                }
+              >
+                About
+              </NavLink>
+            </div>
+            <div  className="">
+              <NavLink
+                to="/projects"
+                className={({ isActive }) =>
+                  isActive
+                    ? `underline ${
+                        isHomePage && !scrolled ? "text-purple-300" : "text-purple-600"
+                      }`
+                    : `${isHomePage && !scrolled ? "hover:text-gray-300" : "hover:text-black"}`
+                }
+              >
+                Projects
+              </NavLink>
+            </div>
+            <div  className="">
+              <NavLink
+                to="/certificates"
+                className={({ isActive }) =>
+                  isActive
+                    ? `underline ${
+                        isHomePage ? "text-purple-300" : "text-purple-600"
+                      }`
+                    : `${isHomePage ? "hover:text-gray-300" : "hover:text-black"}`
+                }
+              >
+                Certificates
+              </NavLink>
+            </div>
+          </div>
+          
+        </div>
+        <div className="hidden md:flex md:flex-1 justify-center ">
+        <NavLink
+            to="/contact"
+            className={`ml-6 px-3 py-1.5 border-2 rounded-full text-[1rem] ${
+              isHomePage && !scrolled
+                ? "border-white text-white hover:bg-gray-300 hover:text-black"
+                : "border-black text-black hover:bg-black hover:text-white"
+            }`}
+          >
+            Contact
+          </NavLink>
+        </div>
       </div>
+
+      {/* Mobile Fullscreen Menu */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: open ? 1 : 0 }}
+        transition={{
+          duration: 0.5,
+        }}
+        className={`${
+          open ? "block" : "hidden"
+        } fixed inset-0 bg-white text-black`}
+      >
+        <div className="flex items-center justify-between px-6 py-4">
+          <a
+            href="#"
+            className="flex items-center gap-3 border-0 "
+          >
+            <span className="text-[3rem] font-bold">Analyst</span>
+            <img
+              src="icons8-statistic-32 (3).png"
+              className="h-9"
+              alt="Logo"
+            />
+          </a>
+          <button className="p-0" onClick={toggle} aria-label="Close Menu">
+            <svg
+              className="w-8 h-8 text-black"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M6 18L18 6M6 6l12 12"
+              ></path>
+            </svg>
+          </button>
+        </div>
+
+        <ul className="flex flex-col items-start pl-10 mt-6 text-[1.2rem] font-light space-y-6">
+          <li>
+            <NavLink
+              to="/"
+              onClick={toggle}
+              className={({ isActive }) =>
+                isActive
+                  ? `underline text-purple-600`
+                  : "hover:text-black"
+              }
+            >
+              Home
+            </NavLink>
+          </li>
+          <li>
+            <NavLink
+              to="/about"
+              onClick={toggle}
+              className={({ isActive }) =>
+                isActive
+                  ? `underline text-purple-600`
+                  : "hover:text-black"
+              }
+            >
+              About
+            </NavLink>
+          </li>
+          <li>
+            <NavLink
+              to="/projects"
+              onClick={toggle}
+              className={({ isActive }) =>
+                isActive
+                  ? `underline text-purple-600`
+                  : "hover:text-black"
+              }
+            >
+              Projects
+            </NavLink>
+          </li>
+          <li>
+            <NavLink
+              to="/certificates"
+              onClick={toggle}
+              className={({ isActive }) =>
+                isActive
+                  ? `underline text-purple-600`
+                  : "hover:text-black"
+              }
+            >
+              Certificates
+            </NavLink>
+          </li>
+          <li>
+            <NavLink
+              to="/contact"
+              onClick={toggle}
+              className={({ isActive }) =>
+                isActive
+                  ? `underline text-purple-600`
+                  : "hover:text-black"
+              }
+            >
+              Contact
+            </NavLink>
+          </li>
+        </ul>
+      </motion.div>
     </nav>
   );
 }
